@@ -1,5 +1,8 @@
 package com.training.spring;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -7,7 +10,12 @@ import javax.validation.constraints.Size;
 
 import com.training.spring.validation.StartWith;
 
+@Entity
 public class Person {
+
+    @Id
+    @GeneratedValue
+    private long   personId;
 
     @NotEmpty
     private String name;
@@ -45,6 +53,14 @@ public class Person {
     @Override
     public String toString() {
         return "Person [name=" + this.name + ", surname=" + this.surname + ", age=" + this.age + "]";
+    }
+
+    public long getPersonId() {
+        return this.personId;
+    }
+
+    public void setPersonId(final long personIdParam) {
+        this.personId = personIdParam;
     }
 
 
