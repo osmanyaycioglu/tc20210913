@@ -41,6 +41,7 @@ public class MyErrorHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorObj handleException(final Exception exp) {
+        exp.printStackTrace();
         ErrorObj errorObjLoc = new ErrorObj();
         errorObjLoc.setMsg(exp.getMessage());
         errorObjLoc.setCause(300);
