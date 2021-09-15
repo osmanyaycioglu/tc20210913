@@ -3,15 +3,16 @@ package com.training.spring;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class Startup1 implements CommandLineRunner {
+@Service
+public class Startup1 {
 
-    @Override
-    public void run(final String... argsParam) throws Exception {
+
+    public void run(final ApplicationArguments argsParam) throws Exception {
+        System.out.println("Starting async");
         Future<String> refreshLoc = this.refresh();
         System.out.println("test1");
         System.out.println("test2");
@@ -35,5 +36,25 @@ public class Startup1 implements CommandLineRunner {
         return CompletableFuture.completedFuture("test finished");
     }
 
+
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<String> refresh2() {
+        System.out.println("A test1");
+        System.out.println("A test2");
+        System.out.println("A test3");
+        System.out.println("A test4");
+        System.out.println("A test5");
+        return CompletableFuture.completedFuture("test finished");
+    }
+
+    @Async("myExecutor")
+    public CompletableFuture<String> refresh3() {
+        System.out.println("B test1");
+        System.out.println("B test2");
+        System.out.println("B test3");
+        System.out.println("B test4");
+        System.out.println("B test5");
+        return CompletableFuture.completedFuture("test finished");
+    }
 
 }

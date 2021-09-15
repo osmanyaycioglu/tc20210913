@@ -39,7 +39,7 @@ public class MyCache {
         }
     }
 
-    @Async("myExecutor")
+    @Async("threadPoolTaskExecutor")
     public Future<String> refresh() {
         System.out.println("test1");
         System.out.println("test2");

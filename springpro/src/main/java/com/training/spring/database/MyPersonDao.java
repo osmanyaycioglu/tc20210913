@@ -19,12 +19,12 @@ public class MyPersonDao {
         EntityManager em = this.emf.createEntityManager();
         em.joinTransaction();
 
-        em.find(null,
-                em,
-                LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        Object findLoc = em.find(null,
+                                 em,
+                                 LockModeType.OPTIMISTIC_FORCE_INCREMENT);
 
-        em.lock(em,
-                null);
+        em.lock(findLoc,
+                LockModeType.OPTIMISTIC_FORCE_INCREMENT);
 
         em.getTransaction()
           .begin();

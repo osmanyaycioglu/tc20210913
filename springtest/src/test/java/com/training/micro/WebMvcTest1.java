@@ -1,4 +1,4 @@
-package com.training.spring;
+package com.training.micro;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,37 +13,32 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.training.spring.employeep.Employee;
-import com.training.spring.employeep.EmployeeOperation;
-import com.training.spring.employeep.EmployeeRest;
-import com.training.spring.employeep.EmployeeService;
 
-@WebMvcTest(EmployeeRest.class)
+@WebMvcTest(PersonRest.class)
 @AutoConfigureMockMvc
-class SpringproApplicationTests {
+class WebMvcTest1 {
 
 
     @Autowired
-    MockMvc           mockMvc;
+    MockMvc       mockMvc;
 
     @Autowired
-    ObjectMapper      om;
+    ObjectMapper  om;
 
     @MockBean
-    EmployeeService   es;
-
-    @MockBean
-    EmployeeOperation eo;
+    PersonService ps;
 
 
     @Test
-    void contextLoads() throws Exception {
-        Employee emp = new Employee();
-        emp.setName("osman");
-        emp.setSurname("test");
-        MvcResult andReturnLoc = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/employee/provision/greet")
+    void givenNormalPerson_expectSUCCESS() throws Exception {
+        Person personLoc = new Person();
+        personLoc.setName("osman");
+        personLoc.setSurname("yay");
+        personLoc.setHeight(200);
+        personLoc.setWeight(90);
+        MvcResult andReturnLoc = this.mockMvc.perform(MockMvcRequestBuilders.post("/person/add")
                                                                             .contentType(MediaType.APPLICATION_JSON)
-                                                                            .content(this.om.writeValueAsBytes(emp)))
+                                                                            .content(this.om.writeValueAsBytes(personLoc)))
                                              .andExpect(MockMvcResultMatchers.status()
                                                                              .isOk())
                                              .andReturn();
@@ -51,7 +46,21 @@ class SpringproApplicationTests {
                                                 .getContentAsString();
 
         Assertions.assertThat(contentAsStringLoc)
-                  .isEqualTo("Hello osman test");
+                  .isEqualTo("SUCCESS");
+    }
+
+    @Test
+    void givenOverWeightedPerson_expectFAILURE() throws Exception {
+        Person personLoc = new Person();
+        personLoc.setName("osman");
+        personLoc.setSurname("yay");
+        personLoc.setHeight(200);
+        personLoc.setWeight(350);
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/person/add")
+                                                   .contentType(MediaType.APPLICATION_JSON)
+                                                   .content(this.om.writeValueAsBytes(personLoc)))
+                    .andExpect(MockMvcResultMatchers.status()
+                                                    .isBadRequest());
     }
 
 }
