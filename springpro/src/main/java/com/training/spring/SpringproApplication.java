@@ -1,8 +1,15 @@
 package com.training.spring;
 
+import java.security.SecureRandom;
+import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +18,11 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.training.spring.employeep.Employee;
 
 //@SpringBootApplication(scanBasePackages = {
 //                                            "com.training.spring",
@@ -24,6 +34,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableAsync
 @EnableAspectJAutoProxy
+@EnableRabbit
 public class SpringproApplication {
 
     @Bean("threadPoolTaskExecutor")
@@ -40,6 +51,31 @@ public class SpringproApplication {
     @Bean
     public Executor myExecutor() {
         return Executors.newFixedThreadPool(5);
+    }
+
+    @Bean
+    public MessageConverter messageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    @Autowired
+    RabbitTemplate rt;
+
+    Random         randomLoc = new SecureRandom();
+
+    @Scheduled(fixedDelay = 500)
+    public void sendMessages() {
+        int nextIntLoc = this.randomLoc.nextInt();
+        this.rt.convertAndSend("root_exchange",
+                               ((nextIntLoc % 2) == 0) ? "secondary_message" : "root_message",
+                               "message " + nextIntLoc);
+        Employee employeeLoc = new Employee();
+        employeeLoc.setName("osman" + nextIntLoc);
+        employeeLoc.setSurname("test");
+        employeeLoc.setVers(nextIntLoc);
+        this.rt.convertAndSend("employee_exchange",
+                               ((nextIntLoc % 2) == 0) ? "emp.tr.id" + nextIntLoc : "emp.eu.id" + nextIntLoc,
+                               employeeLoc);
     }
 
     //    @Autowired
